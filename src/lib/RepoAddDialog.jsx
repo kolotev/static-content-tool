@@ -15,7 +15,7 @@ import axios from "axios";
 
 const styles = theme => ({
     dialogContent: {
-        minHeight: "auto",
+        minHeight: "500px",
         overflow: "hidden"
     },
     select: {
@@ -240,6 +240,8 @@ class RepoAddDialog extends React.Component {
                             onChange={this.onChangeProjects}
                             loadOptions={this.loadOptionsProjects}
                             value={state.selectProjects.selectedOption}
+                            isSearchable
+                            menuPlacement="auto"
                         />
                         <DependantAsyncSelect
                             key="repo"
@@ -264,6 +266,8 @@ class RepoAddDialog extends React.Component {
                                     : null
                             }
                             value={state.selectRepos.selectedOption}
+                            isSearchable
+                            menuPlacement="auto"
                         />
                         <TextField
                             key="git-url"
