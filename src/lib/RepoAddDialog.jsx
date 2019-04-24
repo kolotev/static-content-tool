@@ -231,7 +231,7 @@ class RepoAddDialog extends React.Component {
                             id="git-url-tf"
                             label="Git URL"
                             /*helperText="Another Gut URL"*/
-                            value={this.state.selectGitUrl}
+                            value={state.selectGitUrl}
                             margin="normal"
                             fullWidth
                             InputProps={{
@@ -242,9 +242,6 @@ class RepoAddDialog extends React.Component {
                             }}
                             variant="filled"
                         />
-                        <div>
-                            state.selectedProject = {this.state.selectedProject}
-                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button
