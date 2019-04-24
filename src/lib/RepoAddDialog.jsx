@@ -124,10 +124,13 @@ class RepoAddDialog extends React.Component {
         );
         switch (action) {
             case "select-option":
-                this.setState({
-                    selectedProject: selectedOption.value,
-                    selectedRepo: null
-                });
+                this.setState(
+                    {
+                        selectedProject: selectedOption.value,
+                        selectedRepo: null
+                    },
+                    () => this.reposSelect.focus()
+                );
                 return;
             default:
                 this.setState({ selectedProject: null, selectedRepo: null });
