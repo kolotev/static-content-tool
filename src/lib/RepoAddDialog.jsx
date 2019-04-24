@@ -1,4 +1,5 @@
-/* https://codesandbox.io/s/j38lynp68w */
+/* original sandbox https://codesandbox.io/s/j38lynp68w */
+/* git hub connected sandbox https://codesandbox.io/s/nwoqxyozlp */
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Button from "@material-ui/core/Button";
@@ -33,15 +34,15 @@ class RepoAddDialog extends React.Component {
         repos: []
     };
     initialState = this.state;
-    reposSelect: React.ElementRef<AsyncSelect>;
+    reposSelect = null; // :React.ElementRef<AsyncSelect>;
 
-    filterProjects = (inputValue: string) => {
+    filterProjects = inputValue => {
         return this.state.projects.filter(p =>
             p.label.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
 
-    filterRepos = (inputValue: string) => {
+    filterRepos = inputValue => {
         return this.state.repos.filter(r =>
             r.label.toLowerCase().includes(inputValue.toLowerCase())
         );
