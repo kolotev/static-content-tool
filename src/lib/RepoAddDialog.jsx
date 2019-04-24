@@ -47,19 +47,11 @@ class RepoAddDialog extends React.Component {
             r.label.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
-    /*
-        loadProjectOptions () {
 
-        return axios.get(`/api/v1/types`)
-            .then(response => {
-            return {options: response.data, complete: true}
-            });
-        }
-    */
-    loadProjectOptions = inputValue =>
+    loadOptionsProjects = inputValue =>
         new Promise(resolve => {
             console.info(
-                `loadProjectOptions() this.state.areProjectsLoaded: ${
+                `loadOptionsProjects() this.state.areProjectsLoaded: ${
                     this.state.areProjectsLoaded
                 }`
             );
@@ -87,14 +79,14 @@ class RepoAddDialog extends React.Component {
                       .catch(error => console.error(error));
         });
 
-    loadRepoOptions = inputValue =>
+    loadOptionsRepos = inputValue =>
         new Promise(resolve => {
             if (this.state.selectedProject === null) return resolve([]);
             else {
                 const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_repos.cgi?project=${
                     this.state.selectedProject
                 }`;
-                console.info(`loadRepoOptions() url: ${url}`);
+                console.info(`loadOptionsRepos() url: ${url}`);
                 this.state.areReposLoaded
                     ? resolve(this.filterRepos(inputValue))
                     : axios
@@ -110,7 +102,7 @@ class RepoAddDialog extends React.Component {
                                   })
                               );
                               console.info(
-                                  `loadRepoOptions() # of loaded repos: ${
+                                  `loadOptionsRepos() # of loaded repos: ${
                                       repos.length
                                   }`
                               );
@@ -214,7 +206,7 @@ class RepoAddDialog extends React.Component {
                             defaultOptions
                             onChange={this.onChangeProjects}
                             onInputChange={this.onInputChangeProjects}
-                            loadOptions={this.loadProjectOptions}
+                            loadOptions={this.loadOptionsProjects}
                         />
                         <DependantAsyncSelect
                             key="repo"
@@ -231,7 +223,7 @@ class RepoAddDialog extends React.Component {
                             isDisabled={state.selectedProject === null}
                             onChange={this.onChangeRepos}
                             onInputChange={this.onInputChangeRepos}
-                            loadOptions={this.loadRepoOptions}
+                            loadOptions={this.loadOptionsRepos}
                             dependantLoadOptionsArgs={state.selectedProject}
                         />
                         <TextField
