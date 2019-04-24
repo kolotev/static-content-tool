@@ -86,26 +86,6 @@ class RepoAddDialog extends React.Component {
                       .catch(error => console.error(error));
         });
 
-    onChangeProject = (selectedOption, { action }) => {
-        console.info(
-            `onChangeProject() selectedOption.value: ${
-                selectedOption.value
-            }, action: ${action}`
-        );
-        switch (action) {
-            case "select-option":
-                this.setState({
-                    selectedProject: selectedOption.value,
-                    selectedRepo: null
-                });
-                this.reposSelect.focus();
-                return;
-            default:
-                this.setState({ selectedProject: null, selectedRepo: null });
-                return;
-        }
-    };
-
     loadRepoOptions = inputValue =>
         new Promise(resolve => {
             if (this.state.selectedProject === null) return resolve([]);
@@ -142,14 +122,31 @@ class RepoAddDialog extends React.Component {
                           .catch(error => console.error(error));
             }
         });
-    onChangeRepo = (selectedOption, { action }) => {
+
+    onChangeProjects = (selectedOption, { action }) => {
         console.info(
-            `onChangeRepo() selectedOption.value: ${
+            `onChangeProjects() selectedOption.value: ${
                 selectedOption.value
-            }, action: ${action} this.state.selectedRepo: ${
-                this.state.selectedRepo
-            } %o`,
-            selectedOption
+            }, action: ${action}`
+        );
+        switch (action) {
+            case "select-option":
+                this.setState({
+                    selectedProject: selectedOption.value,
+                    selectedRepo: null
+                });
+                return;
+            default:
+                this.setState({ selectedProject: null, selectedRepo: null });
+                return;
+        }
+    };
+
+    onChangeRepos = (selectedOption, { action }) => {
+        console.info(
+            `onChangeRepos() selectedOption.value: ${
+                selectedOption.value
+            }, action: ${action}`
         );
         switch (action) {
             case "select-option":
@@ -214,8 +211,8 @@ class RepoAddDialog extends React.Component {
                             autoFocus
                             cacheOptions
                             defaultOptions
-                            onChange={this.onChangeProject}
-                            onInputChange={this.onInputChangeProject}
+                            onChange={this.onChangeProjects}
+                            onInputChange={this.onInputChangeProjects}
                             loadOptions={this.loadProjectOptions}
                         />
                         <DependantAsyncSelect
@@ -230,11 +227,11 @@ class RepoAddDialog extends React.Component {
                             name="bb-repo"
                             openMenuOnFocus
                             defaultOptions
-                            loadOptions={this.loadRepoOptions}
                             isDisabled={state.selectedProject === null}
-                            onInputChange={this.loadRepoOptions}
+                            onChange={this.onChangeRepos}
+                            onInputChange={this.onInputChangeRepos}
+                            loadOptions={this.loadRepoOptions}
                             dependantLoadOptionsArgs={state.selectedProject}
-                            onChange={this.onChangeRepo}
                         />
                         <TextField
                             key="git-url"
