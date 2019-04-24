@@ -173,7 +173,7 @@ class RepoAddDialog extends React.Component {
     onExit = e => {
         console.info("onExit: clear the form");
         this.setState(this.initialState);
-        typeof this.props.onExit === "function" ? this.props.onExit(e) : null;
+        if (typeof this.props.onExit === "function") this.props.onExit(e);
     };
 
     render() {
