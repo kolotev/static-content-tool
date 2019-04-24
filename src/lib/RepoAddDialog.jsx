@@ -78,6 +78,7 @@ class RepoAddDialog extends React.Component {
                         this.setState({
                             selectProjects: {
                                 loaded: true,
+                                selectedOption: null,
                                 options: projects
                             }
                         });
@@ -114,6 +115,7 @@ class RepoAddDialog extends React.Component {
                             this.setState({
                                 selectRepos: {
                                     loaded: true,
+                                    selectedOption: null,
                                     options: repos
                                 }
                             });
@@ -168,9 +170,7 @@ class RepoAddDialog extends React.Component {
 
     onChangeRepos = (selectedOption, { action }) => {
         console.info(
-            `onChangeRepos() selectedOption.value: ${
-                selectedOption.value
-            }, action: ${action}`
+            `onChangeRepos() selectedOption.value: ${selectedOption}, action: ${action}`
         );
         switch (action) {
             case "select-option":
