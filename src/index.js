@@ -1,3 +1,5 @@
+// https://codesandbox.io/s/github/kolotev/static-content-tool
+
 import React from "react";
 import ReactDOM from "react-dom";
 import Repos from "./Repos";
@@ -11,11 +13,11 @@ const $mainApp = document.querySelector("#main_app");
 let $target = null;
 
 if ($root) {
-  // console.info("root is here");
-  $target = $root;
+    // console.info("root is here");
+    $target = $root;
 } else if ($mainApp) {
-  // console.info("main_app is here");
-  $target = $mainApp;
+    // console.info("main_app is here");
+    $target = $mainApp;
 }
 
 ReactDOM.render(<Repos />, $target);

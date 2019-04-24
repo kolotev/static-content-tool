@@ -1,5 +1,5 @@
 /*eslint no-console: ["error", { allow: ["warn", "error"] }] */
-/* https://codesandbox.io/s/j38lynp68w */
+/* https://codesandbox.io/s/github/kolotev/static-content-tool */
 import React from "react";
 import ReactDOM from "react-dom";
 import withStyles from "@material-ui/core/styles/withStyles";

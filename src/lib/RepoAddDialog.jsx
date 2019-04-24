@@ -1,5 +1,5 @@
 /* original sandbox https://codesandbox.io/s/j38lynp68w */
-/* git hub connected sandbox https://codesandbox.io/s/nwoqxyozlp */
+/* git hub connected sandbox https://codesandbox.io/s/github/kolotev/static-content-tool */
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Button from "@material-ui/core/Button";
