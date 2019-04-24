@@ -25,115 +25,143 @@ const styles = theme => ({
 
 class RepoAddDialog extends React.Component {
     state = {
-        areProjectsLoaded: false,
-        areReposLoaded: false,
-        selectedProject: null,
-        selectedRepo: null,
-        selectGitUrl: null,
-        projects: [],
-        repos: []
+        selectProjects: {
+            loaded: false,
+            options: [],
+            selectedOption: null
+        },
+        selectRepos: {
+            loaded: false,
+            options: [],
+            selectedOption: null
+        },
+        gitUrl: ""
     };
-    initialState = this.state;
+
+    iState = this.state; // initial state
+    iStateSelectProjects = this.iState.selectProjects;
+    iStateSelectProjects = this.iState.selectRepos;
+    iStategitUrl = this.iState.gitUrl;
     reposSelect = null; // :React.ElementRef<AsyncSelect>;
 
     filterProjects = inputValue => {
-        return this.state.projects.filter(p =>
+        return this.state.selectProjects.options.filter(p =>
             p.label.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
 
     filterRepos = inputValue => {
-        return this.state.repos.filter(r =>
+        return this.state.selectRepos.options.filter(r =>
             r.label.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
 
     loadOptionsProjects = inputValue =>
         new Promise(resolve => {
-            console.info(
-                `loadOptionsProjects() this.state.areProjectsLoaded: ${
-                    this.state.areProjectsLoaded
-                }`
-            );
             const url =
                 "https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_projects.cgi";
-            this.state.areProjectsLoaded
-                ? resolve(this.filterProjects(inputValue))
-                : axios
-                      .get(url)
-                      .then(response => {
-                          let projects = response.data.map(
-                              ({ id, name, key }, idx) => ({
-                                  label: name,
-                                  value: key,
-                                  id: id,
-                                  idx: idx
-                              })
-                          );
-                          this.setState({
-                              projects: projects,
-                              areProjectsLoaded: true
-                          });
-                          resolve(this.filterProjects(inputValue));
-                      })
-                      .catch(error => console.error(error));
+            if (this.state.selectProjects.loaded)
+                resolve(this.filterProjects(inputValue));
+            else {
+                console.info(`loadOptionsProjects() url: ${url}`);
+                axios
+                    .get(url)
+                    .then(response => {
+                        let projects = response.data.map(
+                            ({ id, name, key }, idx) => ({
+                                label: name,
+                                value: key,
+                                id: id,
+                                idx: idx
+                            })
+                        );
+                        this.setState({
+                            selectProjects: {
+                                loaded: true,
+                                options: projects
+                            }
+                        });
+                        resolve(this.filterProjects(inputValue));
+                    })
+                    .catch(error => console.error(error));
+            }
         });
 
     loadOptionsRepos = inputValue =>
         new Promise(resolve => {
-            if (this.state.selectedProject === null) return resolve([]);
+            const { selectProjects, selectRepos } = this.state;
+            if (selectProjects.loaded === null) resolve([]);
             else {
                 const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_repos.cgi?project=${
-                    this.state.selectedProject
+                    selectProjects.selectedOption.value
                 }`;
-                console.info(`loadOptionsRepos() url: ${url}`);
-                this.state.areReposLoaded
-                    ? resolve(this.filterRepos(inputValue))
-                    : axios
-                          .get(url)
-                          .then(response => {
-                              let repos = response.data.map(
-                                  ({ id, name, slug, links }, idx) => ({
-                                      label: name,
-                                      value: slug,
-                                      id: id,
-                                      idx: idx,
-                                      git_url: links.clone[1]
-                                  })
-                              );
-                              console.info(
-                                  `loadOptionsRepos() # of loaded repos: ${
-                                      repos.length
-                                  }`
-                              );
-                              this.setState({
-                                  repos: repos,
-                                  areReposLoaded: true
-                              });
-                              resolve(this.filterRepos(inputValue));
-                          })
-                          .catch(error => console.error(error));
+
+                if (selectRepos.loaded) resolve(this.filterRepos(inputValue));
+                else {
+                    console.info(`loadOptionsRepos() url: ${url}`);
+                    axios
+                        .get(url)
+                        .then(response => {
+                            let repos = response.data.map(
+                                ({ id, name, slug, links }, idx) => ({
+                                    label: name,
+                                    value: slug,
+                                    id: id,
+                                    idx: idx,
+                                    git_url: links.clone[1]
+                                })
+                            );
+                            this.setState({
+                                selectRepos: {
+                                    loaded: true,
+                                    options: repos
+                                }
+                            });
+                            resolve(this.filterRepos(inputValue));
+                        })
+                        .catch(error => console.error(error));
+                }
             }
         });
 
-    onChangeProjects = (selectedOption, { action }) => {
-        console.info(
-            `onChangeProjects() selectedOption.value: ${
-                selectedOption.value
-            }, action: ${action}`
-        );
+    resetSelectProjects = () => {
+        this.setState({
+            selectProjects: this.iStateSelectProjects
+        });
+        this.resetSelectRepos();
+    };
+
+    resetSelectRepos = () => {
+        this.setState({
+            selectRepos: this.iStateSelectProjects
+        });
+        this.resetGitUrl();
+    };
+
+    resetGitUrl = () => {
+        this.setState({
+            GitUrl: this.iStateGitUrl
+        });
+    };
+
+    onChangeProjects = (selectOption, { action }) => {
         switch (action) {
             case "select-option":
                 this.setState(
                     {
-                        selectedProject: selectedOption.value,
-                        selectedRepo: null
+                        selectProjects: {
+                            selectedOption: selectOption
+                        },
+                        selectRepos: {
+                            selectedOption: null
+                        },
+                        gitUrl: ""
                     },
                     () => this.reposSelect.focus()
                 );
                 return;
             default:
-                this.setState({ selectedProject: null, selectedRepo: null });
+                this.resetSelectProjects();
                 return;
         }
     };
@@ -147,19 +175,21 @@ class RepoAddDialog extends React.Component {
         switch (action) {
             case "select-option":
                 this.setState({
-                    selectedRepo: selectedOption.value,
-                    selectGitUrl: selectedOption.git_url.href
+                    selectRepos: {
+                        selectedOption: selectedOption
+                    },
+                    gitUrl: selectedOption.git_url.href
                 });
+
                 return;
             default:
-                this.setState({ selectedRepo: null });
+                this.resetSelectRepos();
                 return;
         }
     };
 
     onExit = e => {
-        console.info("onExit: clear the form");
-        this.setState(this.initialState);
+        this.setState(this.iState);
         if (typeof this.props.onExit === "function") this.props.onExit(e);
     };
 
@@ -208,8 +238,8 @@ class RepoAddDialog extends React.Component {
                             cacheOptions
                             defaultOptions
                             onChange={this.onChangeProjects}
-                            onInputChange={this.onInputChangeProjects}
                             loadOptions={this.loadOptionsProjects}
+                            value={state.selectProjects.selectedOption}
                         />
                         <DependantAsyncSelect
                             key="repo"
@@ -223,18 +253,24 @@ class RepoAddDialog extends React.Component {
                             name="bb-repo"
                             openMenuOnFocus
                             defaultOptions
-                            isDisabled={state.selectedProject === null}
+                            isDisabled={
+                                state.selectProjects.selectedOption === null
+                            }
                             onChange={this.onChangeRepos}
-                            onInputChange={this.onInputChangeRepos}
                             loadOptions={this.loadOptionsRepos}
-                            dependantLoadOptionsArgs={state.selectedProject}
+                            dependantLoadOptionsArgs={
+                                state.selectProjects.selectedOption !== null
+                                    ? state.selectProjects.selectedOption.value
+                                    : null
+                            }
+                            value={state.selectRepos.selectedOption}
                         />
                         <TextField
                             key="git-url"
                             id="git-url-tf"
                             label="Git URL"
                             /*helperText="Another Gut URL"*/
-                            value={state.selectGitUrl}
+                            value={state.gitUrl}
                             margin="normal"
                             fullWidth
                             InputProps={{
