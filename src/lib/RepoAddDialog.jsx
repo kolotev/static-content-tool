@@ -108,12 +108,6 @@ class RepoAddDialog extends React.Component {
 
     loadRepoOptions = inputValue =>
         new Promise(resolve => {
-            console.info(`loadRepoOptions() Promise()`);
-            console.info(
-                `loadRepoOptions() this.state.selectedProject:${
-                    this.state.selectedProject
-                }`
-            );
             if (this.state.selectedProject === null) return resolve([]);
             else {
                 const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_repos.cgi?project=${
@@ -135,7 +129,7 @@ class RepoAddDialog extends React.Component {
                                   })
                               );
                               console.info(
-                                  `loadRepoOptions() repos.length: ${
+                                  `loadRepoOptions() # of loaded repos: ${
                                       repos.length
                                   }`
                               );
