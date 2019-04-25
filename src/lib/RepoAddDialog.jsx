@@ -355,6 +355,7 @@ class RepoAddDialog extends React.Component {
             />
             <TextField
               id="git-url-tf"
+              name="bb-git-url"
               label="Git URL"
               className={classes.field}
               helperText={
