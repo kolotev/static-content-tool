@@ -80,7 +80,7 @@ class RepoAddDialog extends React.Component {
   iStateSelectProjects = this.iState.selectProjects;
   iStateSelectProjects = this.iState.selectRepos;
   iStategitUrl = this.iState.gitUrl;
-  reposSelect = null; // :React.ElementRef<AsyncSelect>;
+  reposRef = null; // :React.ElementRef<AsyncSelect>;
 
   handleCallback = callback =>
     typeof callback === "function" ? callback() : null;
@@ -197,7 +197,7 @@ class RepoAddDialog extends React.Component {
                 },
                 () => {
                   resolve(this.filterRepos(inputValue));
-                  this.reposSelect.focus();
+                  this.reposRef.focus();
                 }
               );
             })
@@ -329,7 +329,7 @@ class RepoAddDialog extends React.Component {
             <DependantAsyncSelect
               id="bb-repo-select"
               ref={ref => {
-                this.reposSelect = ref;
+                this.reposRef = ref;
               }}
               styles={selectStyles}
               className={classes.field}
@@ -366,6 +366,9 @@ class RepoAddDialog extends React.Component {
                   : ""
               }
               value={state.gitUrl}
+              inputRef={ref => {
+                this.gitUrlInputRef = ref;
+              }}
               fullWidth
               InputProps={{
                 readOnly: true
@@ -374,12 +377,12 @@ class RepoAddDialog extends React.Component {
                 shrink: true
               }}
               variant="outlined"
-              disabled
+              disabled={false}
               error={
-                (state.submitAttempted && !state.gitUrl) ||
-                (state.gitUrl && !state.gitUrl.startsWith("ssh://"))
+                ((state.submitAttempted && !state.gitUrl) ||
+                  (state.gitUrl && !state.gitUrl.startsWith("ssh://"))) &&
+                (this.gitUrlInputRef.focus(), true)
               }
-              autoFocus
             />
           </form>
         </DialogContent>
