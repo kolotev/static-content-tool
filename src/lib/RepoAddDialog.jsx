@@ -18,7 +18,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import AsyncSelect from "react-select/lib/Async";
 import DependantAsyncSelect from "./DependantAsyncSelect";
 import axios from "axios";
-import Select from "react-select";
+import { withSnackbar } from "notistack";
 
 function inputComponent({ inputRef, ...props }) {
   return <div ref={inputRef} {...props} />;
@@ -72,7 +72,8 @@ class RepoAddDialog extends React.Component {
       options: [],
       selectedOption: null
     },
-    gitUrl: ""
+    gitUrl: "",
+    submitAttempted: false
   };
 
   iState = this.state; // initial state
@@ -281,9 +282,24 @@ class RepoAddDialog extends React.Component {
             // action={this.props.addRepoUrl}
             method="POST"
             onSubmit={e => {
-              e.preventDefault();
-              alert("Submitted form!");
-              this.handleClose();
+              this.setState({
+                submitAttempted: true
+              });
+              let isValid = true;
+              if (!(isValid = this.state.gitUrl))
+                this.props.enqueueSnackbar("Git URL must not be empty", {
+                  variant: "error"
+                });
+              else if (!(isValid = this.state.gitUrl.startsWith("ssh://")))
+                this.props.enqueueSnackbar("Git URL must begin with ssh://", {
+                  variant: "error"
+                });
+
+              if (!isValid) {
+                e.preventDefault();
+                return false;
+              }
+              return true;
             }}
           >
             <AsyncSelect
@@ -342,7 +358,13 @@ class RepoAddDialog extends React.Component {
               id="git-url-tf"
               label="Git URL"
               className={classes.field}
-              /*helperText="Another Gut URL"*/
+              helperText={
+                state.submitAttempted && !state.gitUrl
+                  ? "Error: empty field"
+                  : state.gitUrl && !state.gitUrl.startsWith("ssh://")
+                  ? "Error: must begin with ssh://"
+                  : ""
+              }
               value={state.gitUrl}
               fullWidth
               InputProps={{
@@ -353,6 +375,11 @@ class RepoAddDialog extends React.Component {
               }}
               variant="outlined"
               disabled
+              error={
+                (state.submitAttempted && !state.gitUrl) ||
+                (state.gitUrl && !state.gitUrl.startsWith("ssh://"))
+              }
+              autoFocus
             />
           </form>
         </DialogContent>
@@ -380,6 +407,8 @@ class RepoAddDialog extends React.Component {
   }
 }
 
-const StyledRepoAddDialog = withStyles(styles)(RepoAddDialog);
-
-export default StyledRepoAddDialog;
+/*RepoAddDialog.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+};
+*/
+export default withStyles(styles)(withSnackbar(RepoAddDialog));
