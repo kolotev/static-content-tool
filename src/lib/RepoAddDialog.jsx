@@ -14,9 +14,8 @@ import DependantAsyncSelect from "./DependantAsyncSelect";
 import axios from "axios";
 
 const styles = theme => ({
-    dialogContent: {
-        minHeight: "500px",
-        overflow: "hidden"
+    root: {
+        overflow: 'visible'
     },
     select: {
         margin: `${theme.spacing(1)}px 0`
@@ -203,8 +202,12 @@ class RepoAddDialog extends React.Component {
             })
         };
 
+
+<DialogContent className={classes.root}></DialogContent>
+
         return (
             <Dialog
+                classes={{ paperScrollPaper: classes.root }}
                 {...otherProps}
                 onExit={this.onExit}
                 aria-labelledby="form-dialog-title"
@@ -221,7 +224,8 @@ class RepoAddDialog extends React.Component {
                     <DialogTitle id="form-dialog-title">
                         Add a Repository
                     </DialogTitle>
-                    <DialogContent classes={{ root: classes.dialogContent }}>
+                    
+                    <DialogContent className={classes.root}>
                         <DialogContentText>
                             To add an NCBI BitBucket Repository please choose
                             the project and repo from the lists below.
