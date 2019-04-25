@@ -49,13 +49,20 @@ class RepoAddDialog extends React.Component {
   iStategitUrl = this.iState.gitUrl;
   reposSelect = null; // :React.ElementRef<AsyncSelect>;
 
+  handleCallback = callback =>
+    typeof callback === "function" ? callback() : null;
+
+  resetState = callback => {
+    this.setState(this.iState, () => this.handleCallback(callback));
+  };
+
   resetSelectProjects = callback => {
     this.resetSelectRepos(() =>
       this.setState(
         {
           selectProjects: this.iStateSelectProjects
         },
-        () => callback()
+        () => this.handleCallback(callback)
       )
     );
   };
@@ -66,7 +73,7 @@ class RepoAddDialog extends React.Component {
         {
           selectRepos: this.iStateSelectProjects
         },
-        () => callback()
+        () => this.handleCallback(callback)
       )
     );
   };
@@ -76,7 +83,7 @@ class RepoAddDialog extends React.Component {
       {
         GitUrl: this.iStateGitUrl
       },
-      () => callback()
+      () => this.handleCallback(callback)
     );
   };
 
@@ -208,7 +215,7 @@ class RepoAddDialog extends React.Component {
   };
 
   onExit = e => {
-    this.setState(this.iState);
+    this.resetState();
     if (typeof this.props.onExit === "function") this.props.onExit(e);
   };
 
@@ -231,22 +238,24 @@ class RepoAddDialog extends React.Component {
         onExit={this.onExit}
         aria-labelledby="form-dialog-title"
       >
-        <form
-          action="/"
-          method="POST"
-          onSubmit={e => {
-            e.preventDefault();
-            alert("Submitted form!");
-            this.handleClose();
-          }}
-        >
-          <DialogTitle id="form-dialog-title">Add a Repository</DialogTitle>
+        <DialogTitle id="form-dialog-title">Add a Repository</DialogTitle>
 
-          <DialogContent className={classes.root}>
-            <DialogContentText>
-              To add an NCBI BitBucket Repository please choose the project and
-              repo from the lists below.
-            </DialogContentText>
+        <DialogContent className={classes.root}>
+          <DialogContentText>
+            To add an NCBI BitBucket Repository please choose the project and
+            repo from the lists below.
+          </DialogContentText>
+          <form
+            id="form-add-repo"
+            action="/repos/add"
+            // action={this.props.addRepoUrl}
+            method="POST"
+            onSubmit={e => {
+              e.preventDefault();
+              alert("Submitted form!");
+              this.handleClose();
+            }}
+          >
             <AsyncSelect
               id="bb-project-select"
               styles={selectStyles}
@@ -295,27 +304,27 @@ class RepoAddDialog extends React.Component {
               }}
               variant="filled"
             />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              aria-label="Cancel"
-              onClick={this.props.onClose}
-              color="default"
-              variant="outlined"
-            >
-              Cancel
-            </Button>
-            <Button
-              aria-label="Save"
-              variant="contained"
-              color="primary"
-              type="submit" //set the buttom type is submit
-              form="save_repo_form" //target the form which you want to sent
-            >
-              Save
-            </Button>
-          </DialogActions>
-        </form>
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            aria-label="Cancel"
+            onClick={this.props.onClose}
+            color="default"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            aria-label="Save"
+            variant="contained"
+            color="primary"
+            type="submit"
+            form="form-add-repo" //target the form which you want to sent
+          >
+            Save
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }
