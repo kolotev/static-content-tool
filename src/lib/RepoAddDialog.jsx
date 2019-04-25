@@ -253,7 +253,7 @@ class RepoAddDialog extends React.Component {
 
   render() {
     const { state, props } = this;
-    const { classes, ...otherProps } = props;
+    const { classes, enqueueSnackbar, ...otherProps } = props;
     const selectStyles = {
       menu: base => ({
         ...base,
@@ -286,11 +286,11 @@ class RepoAddDialog extends React.Component {
               });
               let isValid = true;
               if (!(isValid = this.state.gitUrl))
-                this.props.enqueueSnackbar("Git URL must not be empty", {
+                enqueueSnackbar("Git URL must not be empty", {
                   variant: "error"
                 });
               else if (!(isValid = this.state.gitUrl.startsWith("ssh://")))
-                this.props.enqueueSnackbar("Git URL must begin with ssh://", {
+                enqueueSnackbar("Git URL must begin with ssh://", {
                   variant: "error"
                 });
 
