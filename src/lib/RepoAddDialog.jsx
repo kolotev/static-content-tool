@@ -1,5 +1,11 @@
 /* original sandbox https://codesandbox.io/s/j38lynp68w */
 /* git hub connected sandbox https://codesandbox.io/s/github/kolotev/static-content-tool */
+// TODO:
+// error handling of axios reqyests
+// error handling of recieved data inconsistencies/error.
+//   - such as json parsing error
+//   - unexpected/missing/bad properties values.
+
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Button from "@material-ui/core/Button";
