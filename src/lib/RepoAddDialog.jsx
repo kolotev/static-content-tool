@@ -18,13 +18,45 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import AsyncSelect from "react-select/lib/Async";
 import DependantAsyncSelect from "./DependantAsyncSelect";
 import axios from "axios";
+import Select from "react-select";
+
+function inputComponent({ inputRef, ...props }) {
+  return <div ref={inputRef} {...props} />;
+}
+
+function Control(props) {
+  return (
+    <TextField
+      InputProps={{
+        inputComponent,
+        inputProps: {
+          className: props.selectProps.classes.input,
+          inputRef: props.innerRef,
+          children: props.children,
+          ...props.innerProps
+        }
+      }}
+      {...props.selectProps.textFieldProps}
+    />
+  );
+}
+
+const components = {
+  Control
+};
 
 const styles = theme => ({
   root: {
     overflow: "visible"
   },
-  select: {
-    margin: `${theme.spacing(1)}px 0`
+  field: {
+    margin: `${theme.spacing(2)}px 0`,
+    display: "block"
+  },
+  input: {
+    display: "flex",
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(1.5)
   }
 });
 
@@ -229,8 +261,6 @@ class RepoAddDialog extends React.Component {
       })
     };
 
-    <DialogContent className={classes.root} />;
-
     return (
       <Dialog
         classes={{ paperScrollPaper: classes.root }}
@@ -259,9 +289,9 @@ class RepoAddDialog extends React.Component {
             <AsyncSelect
               id="bb-project-select"
               styles={selectStyles}
-              className={classes.select}
+              className={classes.field}
               name="bb-project"
-              placeholder="Select Project*"
+              placeholder=""
               onChange={this.onChangeProjects}
               loadOptions={this.loadOptionsProjects}
               defaultOptions
@@ -269,6 +299,16 @@ class RepoAddDialog extends React.Component {
               value={state.selectProjects.selectedOption}
               openMenuOnFocus
               autoFocus
+              classes={classes}
+              textFieldProps={{
+                variant: "outlined",
+                label: "NCBI BitBucket Project",
+                fullWidth: true,
+                InputLabelProps: {
+                  shrink: true
+                }
+              }}
+              components={components}
             />
             <DependantAsyncSelect
               id="bb-repo-select"
@@ -276,7 +316,7 @@ class RepoAddDialog extends React.Component {
                 this.reposSelect = ref;
               }}
               styles={selectStyles}
-              className={classes.select}
+              className={classes.field}
               placeholder="Select Repository*"
               name="bb-repo"
               isDisabled={!state.selectRepos.loaded}
@@ -287,14 +327,23 @@ class RepoAddDialog extends React.Component {
               dependantLoadOptionsArgs={state.selectProjects.selectedOption}
               value={state.selectRepos.selectedOption}
               openMenuOnFocus
+              classes={classes}
+              textFieldProps={{
+                variant: "outlined",
+                label: "NCBI BitBucket Repository",
+                fullWidth: true,
+                InputLabelProps: {
+                  shrink: true
+                }
+              }}
+              components={components}
             />
             <TextField
-              key="git-url"
               id="git-url-tf"
               label="Git URL"
+              className={classes.field}
               /*helperText="Another Gut URL"*/
               value={state.gitUrl}
-              margin="normal"
               fullWidth
               InputProps={{
                 readOnly: true
@@ -302,7 +351,8 @@ class RepoAddDialog extends React.Component {
               InputLabelProps={{
                 shrink: true
               }}
-              variant="filled"
+              variant="outlined"
+              disabled
             />
           </form>
         </DialogContent>
