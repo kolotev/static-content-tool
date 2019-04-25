@@ -1,3 +1,4 @@
+/*eslint no-console: ["error", { allow: ["warn", "error"] }] */
 /* original sandbox https://codesandbox.io/s/j38lynp68w */
 /* git hub connected sandbox https://codesandbox.io/s/github/kolotev/static-content-tool */
 // TODO:
@@ -138,7 +139,6 @@ class RepoAddDialog extends React.Component {
       if (this.state.selectProjects.loaded)
         resolve(this.filterProjects(inputValue));
       else {
-        console.info(`loadOptionsProjects() url: ${url}`);
         axios
           .get(url)
           .then(response => {
@@ -174,7 +174,6 @@ class RepoAddDialog extends React.Component {
 
         if (selectRepos.loaded) resolve(this.filterRepos(inputValue));
         else {
-          console.info(`loadOptionsRepos() url: ${url}`);
           axios
             .get(url)
             .then(response => {
