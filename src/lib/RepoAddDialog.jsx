@@ -83,6 +83,8 @@ class RepoAddDialog extends React.Component {
     iStateSelectProjects = this.iState.selectRepos;
     iStateGitUrl = this.iState.gitUrl;
     iStateBBRepoUrl = this.iState.bbRepoUrl;
+    iStateSubmitAttempted = this.iState.submitAttempted;
+
     reposRef = null; // :React.ElementRef<AsyncSelect>;
 
 
@@ -105,12 +107,14 @@ class RepoAddDialog extends React.Component {
     };
 
     resetSelectRepos = callback => {
-        this.resetGitUrl(() =>
-            this.setState(
-                {
-                    selectRepos: this.iStateSelectProjects
-                },
-                () => this.handleCallback(callback)
+        this.resetBBRepoUrl( () =>
+            this.resetGitUrl(() =>
+                this.setState(
+                    {
+                        selectRepos: this.iStateSelectProjects
+                    },
+                    () => this.handleCallback(callback)
+                )
             )
         );
     };
@@ -128,6 +132,15 @@ class RepoAddDialog extends React.Component {
         this.setState(
             {
                 bbRepoUrl: this.iStateBBRepoUrl
+            },
+            () => this.handleCallback(callback)
+        );
+    };
+
+    resetSubmitAttempted = callback => {
+        this.setState(
+            {
+                submitAttempted: this.iStateBBRepoUrl
             },
             () => this.handleCallback(callback)
         );
@@ -203,7 +216,7 @@ class RepoAddDialog extends React.Component {
                                     id: id,
                                     idx: idx,
                                     git_url: links.clone.filter(item => item.name === 'ssh')[0],
-                                    bb_repo_url: project.links.self.filter(item => 'href' in item)[0].href
+                                    bb_repo_url: project.links.self.filter(item => 'href' in item)[0]
                                 })
                             );
                             this.setState(
@@ -248,19 +261,15 @@ class RepoAddDialog extends React.Component {
         const { selectRepos } = this.state;
         switch (action) {
             case "select-option":
-                this.resetBBRepoUrl(() =>
-                    this.resetGitUrl(() =>
-                        this.setState({
-                            selectRepos: {
-                                loaded: selectRepos.loaded,
-                                selectedOption: selectedOption,
-                                options: selectRepos.options
-                            },
-                            gitUrl: selectedOption.git_url.href,
-                            bbRepoUrl: selectedOption.bb_repo_url.href
-                        })
-                    )
-                );
+                this.setState({
+                    selectRepos: {
+                        loaded: selectRepos.loaded,
+                        selectedOption: selectedOption,
+                        options: selectRepos.options
+                    },
+                    gitUrl: selectedOption.git_url.href,
+                    bbRepoUrl: selectedOption.bb_repo_url.href
+                });
                 return;
             default:
                 return;
