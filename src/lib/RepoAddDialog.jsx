@@ -74,6 +74,7 @@ class RepoAddDialog extends React.Component {
             selectedOption: null
         },
         gitUrl: "",
+        bbRepoUrl: "",
         submitAttempted: false
     };
 
@@ -81,6 +82,7 @@ class RepoAddDialog extends React.Component {
     iStateSelectProjects = this.iState.selectProjects;
     iStateSelectProjects = this.iState.selectRepos;
     iStateGitUrl = this.iState.gitUrl;
+    iStateBBRepoUrl = this.iState.bbRepoUrl;
     reposRef = null; // :React.ElementRef<AsyncSelect>;
 
     handleCallback = callback =>
@@ -116,6 +118,15 @@ class RepoAddDialog extends React.Component {
         this.setState(
             {
                 gitUrl: this.iStateGitUrl
+            },
+            () => this.handleCallback(callback)
+        );
+    };
+
+    resetBBRepoUrl = callback => {
+        this.setState(
+            {
+                bbRepoUrl: this.iStateBBRepoUrl
             },
             () => this.handleCallback(callback)
         );
@@ -185,12 +196,13 @@ class RepoAddDialog extends React.Component {
                         .get(url)
                         .then(response => {
                             let repos = response.data.map(
-                                ({ id, name, slug, links }, idx) => ({
+                                ({ id, name, slug, links, project }, idx) => ({
                                     label: name,
                                     value: slug,
                                     id: id,
                                     idx: idx,
-                                    git_url: links.clone[1]
+                                    git_url: links.clone.filter(item => item.name === 'ssh')[0],
+                                    bb_repo_url: project.links.self.filter(item => 'href' in item)[0].href
                                 })
                             );
                             this.setState(
@@ -235,15 +247,18 @@ class RepoAddDialog extends React.Component {
         const { selectRepos } = this.state;
         switch (action) {
             case "select-option":
-                this.resetGitUrl(() =>
-                    this.setState({
-                        selectRepos: {
-                            loaded: selectRepos.loaded,
-                            selectedOption: selectedOption,
-                            options: selectRepos.options
-                        },
-                        gitUrl: selectedOption.git_url.href
-                    })
+                this.resetBBRepoUrl(() =>
+                    this.resetGitUrl(() =>
+                        this.setState({
+                            selectRepos: {
+                                loaded: selectRepos.loaded,
+                                selectedOption: selectedOption,
+                                options: selectRepos.options
+                            },
+                            gitUrl: selectedOption.git_url.href,
+                            bbRepoUrl: selectedOption.bb_repo_url.href
+                        })
+                    )
                 );
                 return;
             default:
@@ -256,9 +271,42 @@ class RepoAddDialog extends React.Component {
         if (typeof this.props.onExit === "function") this.props.onExit(e);
     };
 
+    onSubmit = e => {
+        let isValid = true;
+
+        this.setState({
+            submitAttempted: true
+        });
+        const { gitUrl, bbRepoUrl } = this.state;
+        const { enqueueSnackbar } = this.props;
+
+        if (!(gitUrl)) {
+            enqueueSnackbar("Git URL must not be empty", {
+                variant: "error"
+            });
+            isValid = false;
+        } else if (!gitUrl.startsWith("ssh://")) {
+            enqueueSnackbar("Git URL must begin with ssh://", {variant: "error"});
+            isValid = false;
+        }
+        if (!(bbRepoUrl)) {
+            enqueueSnackbar("BitBucket URL must not be empty", {variant: "error"});
+            isValid = false;
+        } else if (!bbRepoUrl.startsWith("http://") && !bbRepoUrl.startsWith("https://")) {
+            enqueueSnackbar("BitBucket URL must begin with http:// or https://", {variant: "error"});
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    };
+
     render() {
         const { state, props } = this;
-        const { classes, enqueueSnackbar, dialogProps } = props;
+        const { classes, dialogProps } = props;
         const selectStyles = {
             menu: base => ({
                 ...base,
@@ -287,33 +335,7 @@ class RepoAddDialog extends React.Component {
                         action="/repos/add"
                         // action={this.props.addRepoUrl}
                         method="POST"
-                        onSubmit={e => {
-                            this.setState({
-                                submitAttempted: true
-                            });
-                            let isValid = true;
-                            if (!(isValid = this.state.gitUrl))
-                                enqueueSnackbar("Git URL must not be empty", {
-                                    variant: "error"
-                                });
-                            else if (
-                                !(isValid = this.state.gitUrl.startsWith(
-                                    "ssh://"
-                                ))
-                            )
-                                enqueueSnackbar(
-                                    "Git URL must begin with ssh://",
-                                    {
-                                        variant: "error"
-                                    }
-                                );
-
-                            if (!isValid) {
-                                e.preventDefault();
-                                return false;
-                            }
-                            return true;
-                        }}
+                        onSubmit={this.onSubmit}
                     >
                         <AsyncSelect
                             id="bb-project-select"
@@ -377,7 +399,7 @@ class RepoAddDialog extends React.Component {
                             helperText={
                                 state.submitAttempted && !state.gitUrl
                                     ? "Error: empty field"
-                                    : state.gitUrl &&
+                                    : Boolean(state.gitUrl) &&
                                       !state.gitUrl.startsWith("ssh://")
                                     ? "Error: must begin with ssh://"
                                     : ""
@@ -400,6 +422,41 @@ class RepoAddDialog extends React.Component {
                                     !state.gitUrl) ||
                                 (Boolean(state.gitUrl) &&
                                     !state.gitUrl.startsWith("ssh://"))
+                            }
+                        />
+                        <TextField
+                            id="bb-repo-url-tf"
+                            name="bb-repo-url"
+                            label="BitBucket repo URL"
+                            className={classes.field}
+                            helperText={
+                                state.submitAttempted && !state.bbRepoUrl
+                                    ? "Error: empty field"
+                                    : Boolean(state.bbRepoUrl) &&
+                                      !state.bbRepoUrl.startsWith("http://") &&
+                                      !state.bbRepoUrl.startsWith("https://")
+                                    ? "Error: must begin with http:// or https://"
+                                    : ""
+                            }
+                            value={state.bbRepoUrl}
+                            inputRef={ref => {
+                                this.bbRepoUrlInputRef = ref;
+                            }}
+                            fullWidth
+                            InputProps={{
+                                readOnly: true
+                            }}
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            variant="outlined"
+                            disabled={false}
+                            error={
+                                (state.submitAttempted &&
+                                    !state.bbRepoUrl) ||
+                                (Boolean(state.bbRepoUrl) &&
+                                    !state.bbRepoUrl.startsWith("http://") &&
+                                    !state.bbRepoUrl.startsWith("https://"))
                             }
                         />
                     </form>
