@@ -407,7 +407,7 @@ class RepoAddDialog extends React.Component {
                 <DialogActions>
                     <Button
                         aria-label="Cancel"
-                        onClick={this.props.onClose}
+                        onClick={dialogProps.onClose}
                         color="default"
                         variant="outlined"
                     >
