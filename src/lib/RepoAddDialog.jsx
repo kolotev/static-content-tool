@@ -258,7 +258,7 @@ class RepoAddDialog extends React.Component {
 
     render() {
         const { state, props } = this;
-        const { classes, enqueueSnackbar, closeSnackbar, dialogProps } = props;
+        const { classes, enqueueSnackbar, dialogProps } = props;
         const selectStyles = {
             menu: base => ({
                 ...base,
@@ -397,7 +397,7 @@ class RepoAddDialog extends React.Component {
                             disabled={false}
                             error={
                                 (state.submitAttempted &&
-                                    !Boolean(state.gitUrl)) ||
+                                    !state.gitUrl) ||
                                 (Boolean(state.gitUrl) &&
                                     !state.gitUrl.startsWith("ssh://"))
                             }
