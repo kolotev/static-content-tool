@@ -139,7 +139,8 @@ class RepoAddDialog extends React.Component {
     loadOptionsProjects = inputValue =>
         new Promise(resolve => {
             const url =
-                "https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_projects.cgi";
+                // "https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_projects.cgi";
+                "https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/sct_api_proxy.cgi?http://ipmc-dev11.be-md.ncbi.nlm.nih.gov:5788/api/ncbi_bb/projects/";
             if (this.state.selectProjects.loaded)
                 resolve(this.filterProjects(inputValue));
             else {
@@ -174,9 +175,12 @@ class RepoAddDialog extends React.Component {
             const { selectProjects, selectRepos } = this.state;
             if (selectProjects.loaded === null) resolve([]);
             else {
-                const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_repos.cgi?project=${
+                /*const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/bb_repos.cgi?project=${
                     selectProjects.selectedOption.value
-                }`;
+                }`;*/
+                const url = `https://test.ncbi.nlm.nih.gov/ipmc-dev11/ka/sct_api_proxy.cgi?http://ipmc-dev11.be-md.ncbi.nlm.nih.gov:5788/api/ncbi_bb/projects/${
+                    selectProjects.selectedOption.value
+                }/repos/`;
 
                 if (selectRepos.loaded) resolve(this.filterRepos(inputValue));
                 else {
