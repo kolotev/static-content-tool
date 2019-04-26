@@ -15,14 +15,11 @@ export default class DependantAsyncSelect extends AsyncSelect {
      *  }
      */
     reload() {
-        this.loadOptions("", options => {
-            console.warn(
-                "reload:(): isLoading: %s !!this.lastRequest: %s",
-                isLoading,
-                !!this.lastRequest
-            );
-            const isLoading = !!this.lastRequest;
-            this.setState({ defaultOptions: options || [], isLoading });
+        this.setState({ isLoading: true }, () => {
+            this.loadOptions("", options => {
+                const isLoading = !!this.lastRequest;
+                this.setState({ defaultOptions: options || [], isLoading });
+            });
         });
     }
 
