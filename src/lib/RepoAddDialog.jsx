@@ -85,6 +85,7 @@ class RepoAddDialog extends React.Component {
     iStateBBRepoUrl = this.iState.bbRepoUrl;
     reposRef = null; // :React.ElementRef<AsyncSelect>;
 
+
     handleCallback = callback =>
         typeof callback === "function" ? callback() : null;
 
@@ -215,7 +216,7 @@ class RepoAddDialog extends React.Component {
                                 },
                                 () => {
                                     resolve(this.filterRepos(inputValue));
-                                    this.reposRef.focus();
+                                    this.reposRef.focus(); // focus on Repos selector
                                 }
                             );
                         })
@@ -405,9 +406,6 @@ class RepoAddDialog extends React.Component {
                                     : ""
                             }
                             value={state.gitUrl}
-                            inputRef={ref => {
-                                this.gitUrlInputRef = ref;
-                            }}
                             fullWidth
                             InputProps={{
                                 readOnly: true
@@ -439,9 +437,6 @@ class RepoAddDialog extends React.Component {
                                     : ""
                             }
                             value={state.bbRepoUrl}
-                            inputRef={ref => {
-                                this.bbRepoUrlInputRef = ref;
-                            }}
                             fullWidth
                             InputProps={{
                                 readOnly: true
