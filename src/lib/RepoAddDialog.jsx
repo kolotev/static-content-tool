@@ -56,8 +56,9 @@ const styles = theme => ({
     },
     input: {
         display: "flex",
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(1.5)
+        height: "auto",
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1)
     }
 });
 
