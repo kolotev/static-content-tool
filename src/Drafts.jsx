@@ -118,23 +118,14 @@ class Drafts extends React.Component {
     }
 
     componentDidMount() {
-        /* 
-        axios.get('http://localhost:8080/your/dir/test.json') 
-          .then(res => {
-              this.setState({ items: res.data });  
-        
-        });
-        */
-        let parent = this;
-        //let waitingKey = this.boundSnackSuccess("Loading drafts.");
+        // let waitingKey = this.boundSnackSuccess("Loading drafts.");
         let $data = document.querySelector(
             'script#data[type="application/json"]'
         );
         let data = this.parseData($data);
-        /*setTimeout(function() {
-      parent.props.closeSnackbar(waitingKey);
-    }, 100);
-    */
+        /*
+        setTimeout(() => this.props.closeSnackbar(waitingKey), 100);
+        */
 
         data === undefined
             ? this.setState({ loaded: undefined })
