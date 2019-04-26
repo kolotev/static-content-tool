@@ -91,7 +91,6 @@ class RepoAddDialog extends React.Component {
     };
 
     resetSelectProjects = callback => {
-        console.info("resetSelectProjects");
         this.resetSelectRepos(() =>
             this.setState(
                 {
@@ -103,7 +102,6 @@ class RepoAddDialog extends React.Component {
     };
 
     resetSelectRepos = callback => {
-        console.info("resetSelectRepos");
         this.resetGitUrl(() =>
             this.setState(
                 {
@@ -115,7 +113,6 @@ class RepoAddDialog extends React.Component {
     };
 
     resetGitUrl = callback => {
-        console.info("resetGitUrl");
         this.setState(
             {
                 gitUrl: this.iStateGitUrl
@@ -261,7 +258,7 @@ class RepoAddDialog extends React.Component {
 
     render() {
         const { state, props } = this;
-        const { classes, enqueueSnackbar, ...otherProps } = props;
+        const { classes, enqueueSnackbar, closeSnackbar, dialogProps } = props;
         const selectStyles = {
             menu: base => ({
                 ...base,
@@ -272,7 +269,7 @@ class RepoAddDialog extends React.Component {
         return (
             <Dialog
                 classes={{ paperScrollPaper: classes.root }}
-                {...otherProps}
+                {...dialogProps}
                 onExit={this.onExit}
                 aria-labelledby="form-dialog-title"
             >
@@ -399,10 +396,10 @@ class RepoAddDialog extends React.Component {
                             variant="outlined"
                             disabled={false}
                             error={
-                                ((state.submitAttempted && !state.gitUrl) ||
-                                    (state.gitUrl &&
-                                        !state.gitUrl.startsWith("ssh://"))) &&
-                                (this.gitUrlInputRef.focus(), true)
+                                (state.submitAttempted &&
+                                    !Boolean(state.gitUrl)) ||
+                                (Boolean(state.gitUrl) &&
+                                    !state.gitUrl.startsWith("ssh://"))
                             }
                         />
                     </form>

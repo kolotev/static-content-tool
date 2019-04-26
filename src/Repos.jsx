@@ -121,15 +121,16 @@ class Repos extends React.Component {
 
     componentDidMount() {
         let parent = this;
-        let waitingKey = this.boundSnackSuccess("Loading Repos.");
+        // let waitingKey = this.boundSnackSuccess("Loading Repos.");
         //let $data = document.getElementById('data');
         let $data = document.querySelector(
             'script#data[type="application/json"]'
         );
         let data = this.parseData($data);
-        setTimeout(function() {
+        /*setTimeout(function() {
             parent.props.closeSnackbar(waitingKey);
-        }, 0);
+        }, 100);
+        */
 
         data === undefined
             ? this.setState({ loaded: undefined })
@@ -181,9 +182,11 @@ class Repos extends React.Component {
                 </Grid>
 
                 <RepoAddDialog
-                    onExit={this.handleAddRepoExit}
-                    onClose={this.handleAddRepoOnClose}
-                    open={this.state.dialogOpen}
+                    dialogProps={{
+                        onExit: this.handleAddRepoExit,
+                        onClose: this.handleAddRepoOnClose,
+                        open: this.state.dialogOpen
+                    }}
                 />
                 {/* App container */}
             </div>
